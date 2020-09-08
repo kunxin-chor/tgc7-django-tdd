@@ -7,6 +7,6 @@ from .forms import AnimalForm
 def create_animal(self):
     form = AnimalForm()
 
-    return render(self, 'animals/create.template.html',{
+    return render(self, 'animal/create_animal.template.html', {
         'form': form
     })

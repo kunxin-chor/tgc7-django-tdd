@@ -151,9 +151,31 @@ class AnimalFormTestCase(TestCase):
         self.assertFalse(form.is_valid())
 
 
-class AnimalFormTestCase(TestCase):
+class AnimalViewTestCase(TestCase):
+
+    def setUp(self):
+        self.vet = Vet(first_name="Tan", last_name="Ah Kow",
+                       address="Yishun Ring Road", years=1,
+                       license="ABX12324")
+        self.vet.save()
 
     def test_can_get_animal_form(self):
         response = self.client.get('/animals/create/')
         self.assertEqual(response.status_code, 200)
-        self.assertTemplateUsed('animals/create.template.html')
+        self.assertTemplateUsed(
+            response, 'animal/create_animal.template.html')
+
+    def test_can_create_animal(self):
+
+        self.client.post({
+            "name": "Cookie",
+            "breed": "Lab",
+            "is_sterlized": True,
+            "age": 5,
+            "gender": "F",
+            "vet": self.vet.id
+        })
+
+        dog = Animal.objects.filter(name="Cookie")
+        self.assertEqual(dog.count(), 1)
+
