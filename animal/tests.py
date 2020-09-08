@@ -1,7 +1,7 @@
 from django.test import TestCase
 from django.shortcuts import get_object_or_404
 
-from .models import Animal, Vet
+from .models import Animal, Vet, Specie
 from .forms import AnimalForm
 import django.db.utils
 
@@ -164,6 +164,8 @@ class AnimalViewTestCase(TestCase):
                         license="ABX12324")
         self.vet2.save()
 
+        self.species = Specie(name="Dog")
+
     def test_can_get_animal_form(self):
         response = self.client.get('/animals/create/')
         self.assertEqual(response.status_code, 200)
@@ -178,7 +180,8 @@ class AnimalViewTestCase(TestCase):
             "is_sterlized": True,
             "age": 5,
             "gender": "F",
-            "vet": self.vet.id
+            "vet": self.vet.id,
+            "species": self.specie.id
         })
         self.assertEqual(response.status_code, 200)
         dog = Animal.objects.filter(name="Cookie")
@@ -206,7 +209,8 @@ class AnimalViewTestCase(TestCase):
             'is_sterlized': False,
             'age': 32,
             'gender': "F",
-            'vet': self.vet2.id
+            'vet': self.vet2.id,
+            
         })
 
         self.assertEqual(response.status_code, 200)
