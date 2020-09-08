@@ -32,15 +32,25 @@ class VetModelTestCase(TestCase):
 
     def test_years_in_practise_should_default_to_one(self):
         v = Vet()
+        v.first_name = "Tan"
+        v.last_name = "Ah Kow"
+        v.address = "Yishun Ring Road"
+        v.license = "ABC1234X"
         v.save()
 
         saved_vet = get_object_or_404(Vet, pk=id)
         self.assertEqual(saved_vet.years, 1)
 
-
     def test_it_should_have_first_name(self):
-        pass
-    
+        v = Vet()
+        v.last_name = "Ah Kow"
+        v.address = "Yishun Ring Road"
+        v.license = "ABC1234X"
+        v.first_name = "Tan"
+
+        with self.assertRaises():
+            v.save()
+
     def test_it_should_have_last_name(self):
         pass
 
