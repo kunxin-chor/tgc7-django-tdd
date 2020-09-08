@@ -28,3 +28,24 @@ class AnimalModelTestCase(TestCase):
         self.assertEqual(saved_animal.gender, "M")
 
 
+class VetModelTestCase(TestCase):
+
+    def test_years_in_practise_should_default_to_one(self):
+        v = Vet()
+        v.save()
+
+        saved_vet = get_object_or_404(Vet, pk=id)
+        self.assertEqual(saved_vet.years, 1)
+
+
+    def test_it_should_have_first_name(self):
+        pass
+    
+    def test_it_should_have_last_name(self):
+        pass
+
+    def test_it_should_have_address(self):
+        pass
+
+    def test_it_should_have_license_number(self):
+        pass
