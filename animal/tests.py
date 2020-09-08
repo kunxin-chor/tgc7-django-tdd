@@ -159,6 +159,11 @@ class AnimalViewTestCase(TestCase):
                        license="ABX12324")
         self.vet.save()
 
+        self.vet2 = Vet(first_name="Tan", last_name="Ah Kow",
+                        address="Yishun Ring Road", years=1,
+                        license="ABX12324")
+        self.vet2.save()
+
     def test_can_get_animal_form(self):
         response = self.client.get('/animals/create/')
         self.assertEqual(response.status_code, 200)
@@ -167,7 +172,7 @@ class AnimalViewTestCase(TestCase):
 
     def test_can_create_animal(self):
 
-        self.client.post({
+        response = self.client.post('/animals/create/', {
             "name": "Cookie",
             "breed": "Lab",
             "is_sterlized": True,
@@ -175,7 +180,30 @@ class AnimalViewTestCase(TestCase):
             "gender": "F",
             "vet": self.vet.id
         })
-
+        self.assertEqual(response.status_code, 200)
         dog = Animal.objects.filter(name="Cookie")
         self.assertEqual(dog.count(), 1)
 
+    def test_can_edit_animal(self):
+        animal = Animal(name="Cookie", breed="Cat", is_sterlized=True, age=3,
+                        gender="M", vet=self.vet)
+        animal.save()
+
+        response = self.client.post(f'/animals/edit/{animal.id}/', {
+            'name': 'Cookie2',
+            'breed': 'Cat2',
+            'is_sterlized': False,
+            'age': 32,
+            'gender': "F",
+            'vet': self.vet2.id
+        })
+
+        self.assertEqual(response.status_code, 200)
+        dog = get_object_or_404(Animal, pk=animal.id)
+
+        self.assertEquals(dog.name, "Cookie2")
+        self.assertEquals(dog.breed, "Cat2")
+        self.assertEquals(dog.is_sterlized, False)
+        self.assertEquals(dog.age, 32)
+        self.assertEquals(dog.gender, 'F')
+        self.assertEquals(dog.et2, self.vet2)
