@@ -106,3 +106,23 @@ class VetModelTestCase(TestCase):
 
         with self.assertRaises(django.db.utils.IntegrityError):
             v.save()
+
+
+class AnimalFormTestCase(TestCase):
+
+    def test_if_name_is_complusory(self):
+
+        v = Vet(first_name="Tan", last_name="Ah Kow",
+                address="Yishun Ring Road", years=1,
+                license="ABX12324")
+        v.save()
+
+        form = AnimalForm({
+            "breed": "Golden Retriever",
+            "is_sterlized": "False",
+            "age": 20,
+            "gender": "M",
+            "vet": vet
+        })
+
+        self.assertFalse(form.is_valid())
