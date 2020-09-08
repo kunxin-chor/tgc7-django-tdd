@@ -9,6 +9,7 @@ class Animal(models.Model):
     is_sterlized = models.BooleanField(blank=False, default=False)
     age = models.IntegerField(blank=False, default=1)
     gender = models.CharField(blank=False, max_length=1)
+    vet = models.ForeignKey("Vet", on_delete=models.RESTRICT)
 
 
 class Vet(models.Model):
