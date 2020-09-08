@@ -12,3 +12,5 @@ class AnimalModelTestCase(TestCase):
         a.age = 8
         a.gender = "M"
 
+        a.save()
+
