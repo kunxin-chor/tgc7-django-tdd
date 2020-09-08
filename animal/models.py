@@ -10,6 +10,7 @@ class Animal(models.Model):
     age = models.IntegerField(blank=True, default=1)
     gender = models.CharField(blank=False, max_length=1)
     vet = models.ForeignKey("Vet", on_delete=models.RESTRICT)
+    microchip = models.CharField(blank=False, max_length=26)
 
 
 class Vet(models.Model):

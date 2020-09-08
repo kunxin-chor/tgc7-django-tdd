@@ -164,7 +164,8 @@ class AnimalViewTestCase(TestCase):
                         license="ABX12324")
         self.vet2.save()
 
-        self.species = Specie(name="Dog")
+        self.specie = Specie(name="Dog")
+        self.specie.save()
 
     def test_can_get_animal_form(self):
         response = self.client.get('/animals/create/')
@@ -181,7 +182,7 @@ class AnimalViewTestCase(TestCase):
             "age": 5,
             "gender": "F",
             "vet": self.vet.id,
-            "species": self.specie.id
+            "specie": self.specie.id
         })
         self.assertEqual(response.status_code, 200)
         dog = Animal.objects.filter(name="Cookie")
@@ -210,7 +211,6 @@ class AnimalViewTestCase(TestCase):
             'age': 32,
             'gender': "F",
             'vet': self.vet2.id,
-            
         })
 
         self.assertEqual(response.status_code, 200)
