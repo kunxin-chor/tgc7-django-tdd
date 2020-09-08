@@ -1,5 +1,7 @@
 from django.test import TestCase
 from django.shortcuts import get_object_or_404
+from django.contrib.auth.models import User
+
 
 from .models import Animal, Vet, Specie
 from .forms import AnimalForm
@@ -11,12 +13,16 @@ class AnimalModelTestCase(TestCase):
 
     def test_create_animal_model(self):
 
+        user = User(username="test_user")
+        user.save()
+
         v = Vet(first_name="Tan", last_name="Ah Kow",
                 address="Yishun Ring Road", years=1,
                 license="ABX12324")
         v.save()
 
         a = Animal()
+        a.owner = user
         a.name = "Fluffy"
         a.breed = "Golden Retriever"
         a.is_sterlized = False
@@ -36,6 +42,7 @@ class AnimalModelTestCase(TestCase):
         self.assertEqual(saved_animal.age, 8)
         self.assertEqual(saved_animal.gender, "M")
         self.assertEqual(saved_animal.vet, v)
+        self.assertEqual(saved_animal.owner, user)
 
     def test_default_age_is_1(self):
         v = Vet(first_name="Tan", last_name="Ah Kow",
@@ -43,12 +50,16 @@ class AnimalModelTestCase(TestCase):
                 license="ABX12324")
         v.save()
 
+        user = User(username="test_user")
+        user.save()
+
         a = Animal()
         a.name = "Fluffy"
         a.breed = "Golden Retriever"
         a.is_sterlized = False
         a.gender = "M"
         a.vet = v
+        a.owner = user
 
         a.save()
         saved_animal = get_object_or_404(Animal, pk=a.id)
@@ -167,6 +178,9 @@ class AnimalViewTestCase(TestCase):
         self.specie = Specie(name="Dog")
         self.specie.save()
 
+        self.user = User(username="test_user")
+        self.user.save()
+
     def test_can_get_animal_form(self):
         response = self.client.get('/animals/create/')
         self.assertEqual(response.status_code, 200)
@@ -181,16 +195,20 @@ class AnimalViewTestCase(TestCase):
             "is_sterlized": True,
             "age": 5,
             "gender": "F",
-            "vet": self.vet.id,
-            "specie": self.specie.id
+            "vet": str(self.vet.id),
+            "microchip": "TEST121212",
+            "owner": str(self.user.id)
         })
         self.assertEqual(response.status_code, 200)
         dog = Animal.objects.filter(name="Cookie")
         self.assertEqual(dog.count(), 1)
 
+        the_dog = Animal.objects.get(name="Cookie")
+        self.assertEqual(the_dog.vet, self.vet)
+
     def test_can_get_edit_animal_form(self):
         animal = Animal(name="Cookie", breed="Cat", is_sterlized=True, age=3,
-                        gender="M", vet=self.vet)
+                        gender="M", vet=self.vet, owner=self.user)
         animal.save()
 
         response = self.client.get(f'/animals/update/{animal.id}/')
@@ -201,7 +219,7 @@ class AnimalViewTestCase(TestCase):
 
     def test_can_edit_animal(self):
         animal = Animal(name="Cookie", breed="Cat", is_sterlized=True, age=3,
-                        gender="M", vet=self.vet)
+                        gender="M", vet=self.vet, microchip="ABX12313123", owner=self.user)
         animal.save()
 
         response = self.client.post(f'/animals/update/{animal.id}/', {
@@ -210,10 +228,13 @@ class AnimalViewTestCase(TestCase):
             'is_sterlized': False,
             'age': 32,
             'gender': "F",
-            'vet': self.vet2.id,
+            'vet': str(self.vet2.id),
+            'microchip': "ABX14151",
+            'owner': str(self.user.id)
         })
 
         self.assertEqual(response.status_code, 200)
+        print(response.content)
         dog = get_object_or_404(Animal, pk=animal.id)
 
         self.assertEquals(dog.name, "Cookie2")
