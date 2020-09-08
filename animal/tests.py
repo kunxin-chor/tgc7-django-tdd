@@ -1,5 +1,8 @@
 from django.test import TestCase
+from django.shortcuts import get_object_or_404
+
 from .models import Animal
+
 
 # Create your tests here.
 class AnimalModelTestCase(TestCase):
@@ -13,4 +16,9 @@ class AnimalModelTestCase(TestCase):
         a.gender = "M"
 
         a.save()
+
+        self.assertTrue(a.id > 0)
+        saved_animal = get_object_or_404(Animal, pk=a.id)
+        self.assertTrue(saved_animal is not None)
+
 
