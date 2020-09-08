@@ -21,4 +21,10 @@ class AnimalModelTestCase(TestCase):
         saved_animal = get_object_or_404(Animal, pk=a.id)
         self.assertTrue(saved_animal is not None)
 
+        self.assertEqual(saved_animal.name, "Fluffy")
+        self.assertEqual(saved_animal.breed, "Golden Retriever")
+        self.assertEqual(saved_animal.is_sterlized, False)
+        self.assertEqual(saved_animal.age, 8)
+        self.assertEqual(saved_animal.gender, "M")
+
 
