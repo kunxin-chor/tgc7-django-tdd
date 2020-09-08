@@ -2,6 +2,7 @@ from django.test import TestCase
 from django.shortcuts import get_object_or_404
 
 from .models import Animal, Vet
+from .forms import AnimalForm
 import django.db.utils
 
 
@@ -110,19 +111,49 @@ class VetModelTestCase(TestCase):
 
 class AnimalFormTestCase(TestCase):
 
+    def setUp(self):
+        self.vet = Vet(first_name="Tan", last_name="Ah Kow",
+                       address="Yishun Ring Road", years=1,
+                       license="ABX12324")
+        self.vet.save()
+
     def test_if_name_is_complusory(self):
-
-        v = Vet(first_name="Tan", last_name="Ah Kow",
-                address="Yishun Ring Road", years=1,
-                license="ABX12324")
-        v.save()
-
         form = AnimalForm({
             "breed": "Golden Retriever",
             "is_sterlized": "False",
             "age": 20,
             "gender": "M",
-            "vet": vet
+            "vet": self.vet
         })
 
         self.assertFalse(form.is_valid())
+
+    def test_if_breed_is_complusory(self):
+
+        form = AnimalForm({
+            "name": "Fluffy",
+            "is_sterlized": "False",
+            "age": 20,
+            "gender": "M",
+            "vet": self.vet
+        })
+
+        self.assertFalse(form.is_valid())
+
+    def test_if_age_is_optional(self):
+        form = AnimalForm({
+            "name": "Fluffy",
+            "is_sterlized": "False",
+            "gender": "M",
+            "vet": self.vet
+        })
+
+        self.assertFalse(form.is_valid())
+
+
+class AnimalFormTestCase(TestCase):
+
+    def test_can_get_animal_form(self):
+        response = self.client.get('/animals/create/')
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed('animals/create.template.html')
