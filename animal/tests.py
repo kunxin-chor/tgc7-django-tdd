@@ -184,12 +184,23 @@ class AnimalViewTestCase(TestCase):
         dog = Animal.objects.filter(name="Cookie")
         self.assertEqual(dog.count(), 1)
 
+    def test_can_get_edit_animal_form(self):
+        animal = Animal(name="Cookie", breed="Cat", is_sterlized=True, age=3,
+                        gender="M", vet=self.vet)
+        animal.save()
+
+        response = self.client.get(f'/animals/update/{animal.id}/')
+
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(
+            response, 'animal/update_animal.template.html')
+
     def test_can_edit_animal(self):
         animal = Animal(name="Cookie", breed="Cat", is_sterlized=True, age=3,
                         gender="M", vet=self.vet)
         animal.save()
 
-        response = self.client.post(f'/animals/edit/{animal.id}/', {
+        response = self.client.post(f'/animals/update/{animal.id}/', {
             'name': 'Cookie2',
             'breed': 'Cat2',
             'is_sterlized': False,
@@ -206,4 +217,4 @@ class AnimalViewTestCase(TestCase):
         self.assertEquals(dog.is_sterlized, False)
         self.assertEquals(dog.age, 32)
         self.assertEquals(dog.gender, 'F')
-        self.assertEquals(dog.et2, self.vet2)
+        self.assertEquals(dog.vet, self.vet2)

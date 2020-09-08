@@ -18,3 +18,6 @@ class Vet(models.Model):
     address = models.CharField(blank=False, max_length=255)
     years = models.IntegerField(blank=False, default=1)
     license = models.CharField(blank=False, max_length=100)
+
+    def __str__(self):
+        return self.first_name + " " + self.last_name

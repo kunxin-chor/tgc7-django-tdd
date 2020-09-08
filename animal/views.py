@@ -25,7 +25,18 @@ def create_animal(request):
 
 def update_animal(request, animal_id):
     animal = get_object_or_404(Animal, pk=animal_id)
-    form = AnimalForm(instance=animal)
-    return render(request, 'animal/edit_animal.template.html', {
-        'form': form
-    })
+    if request.method == "POST":
+        form = AnimalForm(request.POST, instance=animal)
+        if form.is_valid():
+            form.save()
+            return HttpResponse("Animal updated")
+        else:
+            return render(request, 'animal/update_animal.template.html', {
+                'form': form
+            })
+    else:
+
+        form = AnimalForm(instance=animal)
+        return render(request, 'animal/update_animal.template.html', {
+            'form': form
+        })
